@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6281d1bf-efca-4928-9f13-e2ce0cab5390" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="00922675-3fb8-4689-acd8-17603f189108" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="shivasri556@gmail.com" password="abvoeonqjxxvuhaf" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="f9996175-082b-4fdf-8a7b-84004c1eac19" >
+		<vm:queues >
+			<vm:queue queueName="que" />
+		</vm:queues>
+	</vm:config>
+	<flow name="file-readFlow" doc:id="c171d9d6-1d37-4618-bd3a-16395b9305d7" >
+		<http:listener doc:name="Listener" doc:id="306e84d7-90bd-4814-b462-fe0104c28909" config-ref="HTTP_Listener_config" path="/file-read"/>
+		<ee:transform doc:name="Transform Message" doc:id="9590fa63-e998-4c07-8d8a-f8fb74ef6bfd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+1 to 10 map{
+	"EMp ID" : 500+$,
+	"Emp Name": "Shiva",
+	"Emp Age": 25
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="02e001a4-4e7c-444d-bc52-d0c59db21346" >
+			<logger level="INFO" doc:name="Logger" doc:id="85438956-e0de-4364-ba2f-e16f0efe6ed4" message="#[payload]" />
+		</foreach>
+	</flow>
+</mule>
